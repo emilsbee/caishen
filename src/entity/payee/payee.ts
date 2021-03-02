@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
-import { Payment } from "../Payment/Payment"
+import { Payment } from "../payment/payment"
 
 @Entity()
 export class Payee {

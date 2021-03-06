@@ -1,3 +1,4 @@
+scripts/
 etc/
 database.sqlite
 .env

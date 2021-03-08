@@ -41,7 +41,6 @@ export default class Server {
 
     /**
      * The final error handler route. 
-     * 
      */
     startErrorHandler() {
         this.app.use(function (error, req, res, next) {
@@ -54,7 +53,9 @@ export default class Server {
 
     startServer() {
         this.app.listen(Server.port, () => {
-            console.log("Server started on port ", Server.port)
+            if (process.env.NODE_ENV !== "test") {
+                console.log("Server started on port ", Server.port)
+            }
         })
     }
 

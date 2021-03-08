@@ -29,7 +29,8 @@ export default class DatabaseConnection {
             await createConnection({
                 
                 type: "sqlite",
-                database: ":memory",
+                database: "testdatabase.sqlite",
+                dropSchema: true,
                 synchronize: true,
                 logging: false,
                 entities: [

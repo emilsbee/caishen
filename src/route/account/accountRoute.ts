@@ -14,7 +14,7 @@ var router = express.Router()
  * Request body must include iban: string, name: string, balance: number, type: string,
  * payments: Payment[], bunqid: number.
  */
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
 
     const { iban, name, balance, type, payments, bunqid  } = req.body;
 
@@ -30,8 +30,7 @@ router.post("/", async (req, res) => {
 
         if (errors.length > 0) {
             
-            res.status(400).send(errors)
-
+            next({code: 400, message: errors})
         } else {
 
             let accountRepository = getRepository(Account)

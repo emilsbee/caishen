@@ -8,6 +8,7 @@ import {authenticateJWT} from "./middleware/authenticateJWT"
 import paymentListenerRouter from "./route/paymentListener/paymentListenerRoute"
 import accountRouter from "./route/account/accountRoute"
 import { Application } from "express";
+import authenticateJWTTestRouter from "./middleware/tests/authenticateJWTTestRoute"
 
 export default class Server {
     static port:number = 3000
@@ -26,6 +27,11 @@ export default class Server {
         this.app.use("/account", authenticateJWT, accountRouter)
         this.app.use("/paymentListener", paymentListenerRouter)
         
+        // Setup test routes
+        if (process.env.NODE_ENV) {
+            this.app.use("/authenticate-jwt-test", authenticateJWTTestRouter)
+        }
+
         // Error handlers
         this.startErrorHandler()
 

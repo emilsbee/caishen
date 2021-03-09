@@ -14,7 +14,8 @@ import {extractOrCreatePayee} from "../../middleware/extractOrCreatePayee"
  * Route for creating a new payment.
  */
 router.post("/", extractOrCreatePayee, async (req, res, next) => {
-    res.json({message: "Creating a payment"})
+    let { payee } = req.body
+    res.json({payee})
 })
 
 router.get("/", (req, res) => {

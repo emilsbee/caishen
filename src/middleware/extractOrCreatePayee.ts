@@ -75,12 +75,12 @@ export async function extractOrCreatePayee (req, res, next) {
             next({code: 500, message: "Failed to find a payee by payeeid in payee extraction middleware."})
         }
 
-        // If a payee exist with the given payeeid
+        // If a payee exists with the given payeeid
         if (payee) {
             req.body["payee"] = payee
             next()
         } else {
-            next({code: 400, message: "No payee exist with the given id ["+payeeid+"] in payee extraction middleware."})
+            next({code: 400, message: "No payee exists with the given id ["+payeeid+"] in payee extraction middleware."})
         }
 
     // If no information about payee is provided

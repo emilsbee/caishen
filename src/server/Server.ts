@@ -4,9 +4,10 @@ var express = require("express")
 // Internal imports
 import paymentRouter from "../route/payment/paymentRoute"
 import authRoute from "../route/authentication/authRoute"
-import {authenticateJWT} from "../middleware/authenticateJWT"
 import paymentListenerRouter from "../route/paymentListener/paymentListenerRoute"
 import accountRouter from "../route/account/accountRoute"
+import paymentCategoryRouter from "../route/paymentCategory/paymentCategoryRoute"
+import {authenticateJWT} from "../middleware/authenticateJWT"
 import { Application } from "express";
 import testRoutes from "../test/testRoutes"
 
@@ -25,7 +26,8 @@ export default class Server {
         this.app.use("/auth", authRoute)
         this.app.use("/payment", authenticateJWT, paymentRouter)
         this.app.use("/account", authenticateJWT, accountRouter)
-        this.app.use("/paymentListener", paymentListenerRouter)
+        this.app.use("/payment-listener", paymentListenerRouter)
+        this.app.use("/payment-category", paymentCategoryRouter)
         
         // Setup test routes
         if (process.env.NODE_ENV) {

@@ -1,17 +1,13 @@
 // External imports
 import {createConnection} from "typeorm";
 
-
-
 export default class DatabaseConnection {
 
     constructor() {
 
-        if (process.env.NODE_ENV === "test") {
-            this.startTestDb()
-        } else {
+        if (process.env.NODE_ENV !== "test") {
             this.startDb()    
-        }
+        } 
 
     } 
 
@@ -25,33 +21,28 @@ export default class DatabaseConnection {
     }
 
     async startTestDb() {
-        try {
-            await createConnection({
+        return createConnection({
                 
-                type: "sqlite",
-                database: "testdatabase.sqlite",
-                dropSchema: true,
-                synchronize: true,
-                logging: false,
-                entities: [
-                    "src/entity/**/*.ts"
-                ],
-                migrations: [
-                    "src/migration/**/*.ts"
-                ],
-                subscribers: [
-                    "src/subscriber/**/*.ts"
-                ],
-                cli: {
-                    entitiesDir: "src/entity",
-                    migrationsDir: "src/migration",
-                    subscribersDir: "src/subscriber"
-                }
-                 
-            })
-        } catch(e) {
-            console.log("Failed to start the test database. ERROR: ", e)
-        }
+            type: "sqlite",
+            database: "testdatabase.sqlite",
+            dropSchema: true,
+            synchronize: true,
+            logging: false,
+            entities: [
+                "src/entity/**/*.ts"
+            ],
+            migrations: [
+                "src/migration/**/*.ts"
+            ],
+            subscribers: [
+                "src/subscriber/**/*.ts"
+            ],
+            cli: {
+                entitiesDir: "src/entity",
+                migrationsDir: "src/migration",
+                subscribersDir: "src/subscriber"
+            } 
+        })
     }
 }
 

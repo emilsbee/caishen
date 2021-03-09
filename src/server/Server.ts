@@ -2,13 +2,13 @@
 var express = require("express") 
 
 // Internal imports
-import paymentRouter from "./route/payment/paymentRoute"
-import authRoute from "./route/authentication/authRoute"
-import {authenticateJWT} from "./middleware/authenticateJWT"
-import paymentListenerRouter from "./route/paymentListener/paymentListenerRoute"
-import accountRouter from "./route/account/accountRoute"
+import paymentRouter from "../route/payment/paymentRoute"
+import authRoute from "../route/authentication/authRoute"
+import {authenticateJWT} from "../middleware/authenticateJWT"
+import paymentListenerRouter from "../route/paymentListener/paymentListenerRoute"
+import accountRouter from "../route/account/accountRoute"
 import { Application } from "express";
-import authenticateJWTTestRouter from "./middleware/tests/authenticateJWTTestRoute"
+import testRoutes from "../test/testRoutes"
 
 export default class Server {
     static port:number = 3000
@@ -29,7 +29,7 @@ export default class Server {
         
         // Setup test routes
         if (process.env.NODE_ENV) {
-            this.app.use("/authenticate-jwt-test", authenticateJWTTestRouter)
+            this.app.use("/test", testRoutes)
         }
 
         // Error handlers
@@ -47,7 +47,7 @@ export default class Server {
             let code:number = error.code || 500
             let message:string = error.message || "An error occured."
 
-            res.status(code).send({ message})
+            res.status(code).json({message})
         })
     }
 

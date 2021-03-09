@@ -36,7 +36,7 @@ router.post("/", async (req, res, next) => {
             let accountRepository = getRepository(Account)
             let returnedAccount = await accountRepository.save(account)
         
-            res.send(returnedAccount)
+            res.json(returnedAccount)
         }
     })
 
@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
     let accountRepository = getRepository(Account)
     let account = await accountRepository.find({id: accountid})
 
-    res.send(account)
+    res.json(account)
 })
 
 export default router

@@ -21,7 +21,7 @@ export async function extractOrCreatePayee (req, res, next) {
     
     // Checks if payeeName is provided
     if (payeeName && (typeof payeeName === "string") && payeeName.trim().length !== 0) {
-
+        
         let payee:Payee;
         try {
             payee = await getRepository(Payee).findOne({name: payeeName})
@@ -67,8 +67,7 @@ export async function extractOrCreatePayee (req, res, next) {
         }
 
     // Checks if payeeid is provided
-    } else if (payeeid && (typeof payeeName == "string") && payeeName.trim().length !== 0) {
-
+    } else if (payeeid && (typeof payeeid === "string") && payeeid.trim().length !== 0) {
         let payee:Payee;
         try {
             payee = await getRepository(Payee).findOne({id: payeeid})
@@ -78,7 +77,7 @@ export async function extractOrCreatePayee (req, res, next) {
 
         // If a payee exist with the given payeeid
         if (payee) {
-            req.body = payee
+            req.body["payee"] = payee
             next()
         } else {
             next({code: 400, message: "No payee exist with the given id ["+payeeid+"] in payee extraction middleware."})

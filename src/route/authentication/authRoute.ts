@@ -21,12 +21,12 @@ router.post("/login", (req, res) => {
         });
 
     } else {
-        res.send('Username or password incorrect');
+        res.json('Username or password incorrect');
     }
 })
 
 router.get("/register", (req, res) => {
-    res.send("Registering")
+    res.json("Registering")
 })
 
 export default router

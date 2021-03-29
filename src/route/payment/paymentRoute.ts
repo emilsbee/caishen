@@ -8,14 +8,15 @@ var router = express.Router()
 import { Payment } from "../../entity/payment/payment"
 import { Payee } from "../../entity/payee/payee"
 import {extractOrCreatePayee} from "../../middleware/extractOrCreatePayee"
+import { extractOrCreatePaymentCategory } from "../../middleware/extractOrCreatePaymentCategory"
 
 
 /**
  * Route for creating a new payment.
  */
-router.post("/", extractOrCreatePayee, async (req, res, next) => {
-    let { payee } = req.body
-    res.json({payee})
+router.post("/", extractOrCreatePayee, extractOrCreatePaymentCategory, (req, res, next) => {
+    let { payee, paymentCategory, amount, type } = req.body
+    res.json({payee, paymentCategory, amount, type})
 })
 
 router.get("/", (req, res) => {

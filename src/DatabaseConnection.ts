@@ -3,14 +3,6 @@ import {createConnection} from "typeorm";
 
 export default class DatabaseConnection {
 
-    constructor() {
-
-        if (process.env.NODE_ENV !== "test") {
-            this.startDb()    
-        } 
-
-    } 
-
     async startDb() {
         try {
             await createConnection()

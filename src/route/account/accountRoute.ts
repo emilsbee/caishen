@@ -34,7 +34,12 @@ router.post("/", async (req, res, next) => {
         } else {
 
             let accountRepository = getRepository(Account)
-            let returnedAccount = await accountRepository.save(account)
+            let returnedAccount:Account
+            try {
+                await accountRepository.save(account)
+            } catch (e) {
+                next({code: 400, message: e})
+            }
         
             res.json(returnedAccount)
         }

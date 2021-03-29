@@ -1,11 +1,13 @@
 // External imports
 import {CreateDateColumn, Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable} from "typeorm"
+import { IsCurrency, IsDefined, IsInstance, IsInt, IsOptional, IsString, Validate} from "class-validator"
 
 // Internal imports
 import { Account } from "../account/account"
 import { Payee } from "../payee/payee"
 import { PaymentCategory } from "../paymentCategory/paymentCategory"
 import { PaymentTag } from "../paymentTag/paymentTag"
+import { IsOneOf } from "../../classValidators/IsInValidator"
 
 @Entity()
 export class Payment {
@@ -17,28 +19,38 @@ export class Payment {
     date: number
     
     @ManyToOne(() => Payee, payee => payee.payments, {
-        eager: true
+        eager: true,
+        nullable: true
     })
+    @IsOptional()
+    @IsInstance(Payee)
     payee: Payee
     
     
     @ManyToOne(() => PaymentCategory, paymentCategory => paymentCategory.payments, {
-        eager: true
+        eager: true,
+        nullable: true
     })
+    @IsOptional()
+    @IsInstance(PaymentCategory)
     category: PaymentCategory
 
     @Column()
+    @IsDefined()
+    @IsInt()
     amount: number
 
-    @Column({
-        enum: ["Income", "Expense"],
-    })
+    @Column()
+    @IsDefined()
+    @Validate(IsOneOf, ["Income", "Expense"])
     type: string
 
     
     @ManyToOne(() => Account, account => account.payments, {
         eager: true
     })
+    @IsDefined()
+    @IsInstance(Account)
     account: Account
 
     @ManyToMany(() => PaymentTag, {
@@ -51,11 +63,17 @@ export class Payment {
     @Column({
         nullable: true
     })
+    @IsOptional()
+    @IsString()
     note: string
 
     @Column()
+    @IsDefined()
+    @IsCurrency()
     currency: string
 
-    @Column()
+    @Column({nullable: true})
+    @IsOptional()
+    @IsString()
     description: string
 }

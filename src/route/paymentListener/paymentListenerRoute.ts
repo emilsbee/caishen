@@ -1,19 +1,18 @@
+import { NextFunction, Response } from "express";
+
 const fs = require('fs');
 
 var express = require("express")
 var router = express.Router()
 
-router.post("/", (req, res, next) => {
-   
+router.post("/", (req, res:Response, next:NextFunction) => {
     
-    fs.writeFile("./bunq-payments.csv", JSON.stringify(req.body), function(err) {
-        if (err) {
-            next(err)
-        } else {
-            return res.json()
-        }
-    })
-
+    const payment = req.body.NotificationUrl.object.Payment
+    
+    const amount = payment.amount.value
+    const currency = payment.amount.currency
+    const payeeName = payment.counterparty_alias.display_name
+    
 })
 
 export default router

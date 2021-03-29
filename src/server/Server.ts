@@ -1,5 +1,6 @@
 // External imports
 var express = require("express") 
+import { Application } from "express";
 
 // Internal imports
 import paymentRouter from "../route/payment/paymentRoute"
@@ -8,9 +9,12 @@ import paymentListenerRouter from "../route/paymentListener/paymentListenerRoute
 import accountRouter from "../route/account/accountRoute"
 import paymentCategoryRouter from "../route/paymentCategory/paymentCategoryRoute"
 import {authenticateJWT} from "../middleware/authenticateJWT"
-import { Application } from "express";
 import testRoutes from "../test/testRoutes"
 
+/**
+ * After creating a new instance of a server, the method startServer() method
+ * has to be called to start the server listening.
+ */
 export default class Server {
     static port:number = 3000
 
@@ -26,19 +30,16 @@ export default class Server {
         this.app.use("/auth", authRoute)
         this.app.use("/payment", authenticateJWT, paymentRouter)
         this.app.use("/account", authenticateJWT, accountRouter)
-        this.app.use("/payment-listener", paymentListenerRouter)
+        this.app.use("/paymentListener", paymentListenerRouter)
         this.app.use("/payment-category", paymentCategoryRouter)
         
         // Setup test routes
-        if (process.env.NODE_ENV) {
+        if (process.env.NODE_ENV === "test") {
             this.app.use("/test", testRoutes)
         }
 
         // Error handlers
         this.startErrorHandler()
-
-        // Server listener 
-        this.startServer()
     } 
 
     /**
@@ -53,12 +54,15 @@ export default class Server {
         })
     }
 
-    startServer() {
-        this.app.listen(Server.port, () => {
-            if (process.env.NODE_ENV !== "test") {
-                console.log("Server started on port ", Server.port)
-            }
-        })
+    async startServer() {
+        await this.startListening()
+        if (process.env.NODE_ENV !== "test") {
+            console.log("Server started on port", Server.port)
+        }
+    }
+
+    async startListening() {
+        return this.app.listen(Server.port)
     }
 
     getApp() {

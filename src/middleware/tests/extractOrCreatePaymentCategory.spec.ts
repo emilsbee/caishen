@@ -10,11 +10,21 @@ const port:number = Server.port
 const testPaymentCategoryName:string = "Groceries"
 
 describe("extract or create payment category middleware", function() {
-    it ('Responds with 400 when no payment category information is provided', function(done) {
+    it ('Responds with 200 and null paymentCategory when no payment category information is provided', function(done) {
         request(`http://localhost:${port}`)
             .get("/test/extract-or-create-payment-category")
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
-            .expect(400, done)
+            .expect(200)
+            .expect(function(res) {
+                let paymentCategory = res.body.paymentCategory
+    
+                if (paymentCategory == null) {
+                    return true
+                } else {
+                    throw new Error("Returned payment category doesn't match the expected payment category values.")
+                }
+            })
+            .end(done)
     })
 
 
@@ -81,7 +91,16 @@ describe("extract or create payment category middleware", function() {
             .get("/test/extract-or-create-payment-category")
             .send({paymentCategoryid: 42})
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
-            .expect(400)
+            .expect(200)
+            .expect(function(res) {
+                let paymentCategory = res.body.paymentCategory
+    
+                if (paymentCategory == null) {
+                    return true
+                } else {
+                    throw new Error("Returned payment category doesn't match the expected payment category values.")
+                }
+            })
             .end(done)
     })
 })

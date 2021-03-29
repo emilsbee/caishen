@@ -85,7 +85,8 @@ export async function extractOrCreatePayee (req, res, next) {
 
     // If no information about payee is provided
     } else {
-        next({code: 400,message: "You must provide a payeeName:string or payeeid:string to create a payment."})
+        req.body["payee"] = null
+        next()
     }
 }
 

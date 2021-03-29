@@ -9,7 +9,7 @@ import { PaymentCategory } from "../entity/paymentCategory/paymentCategory"
 /**
  * Middleware for populating the request body with an instance of PaymentCategory. The instance is either
  * found by the provided paymentCategoryName or paymentCategoryid, or a new instance is created based on the provided 
- * paymentCategoryName.
+ * paymentCategoryName. If no valid information is given about the category then paymentCategory is set to null in request body.
  * @param req 
  * @param res 
  * @param next 
@@ -83,7 +83,8 @@ export async function extractOrCreatePaymentCategory (req, res, next) {
 
     // If no information about payment category is provided
     } else {
-        next({code: 400,message: "You must provide a paymentCategoryName:string or paymentCategoryid:string to create a payment category."})
+        req.body["paymentCategory"] = null
+        next()
     }
 }
 

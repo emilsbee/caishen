@@ -17,6 +17,7 @@
    "dependencies": {
       "bent": "^7.3.12",
       "class-validator": "^0.13.1",
+      "crypto": "^1.0.1",
       "dotenv": "^8.2.0",
       "express": "^4.17.1",
       "jsonwebtoken": "^8.5.1",
@@ -27,6 +28,7 @@
    "scripts": {
       "start": "ts-node src/index.ts",
       "start:debug": "DEBUG=* ts-node src/index.ts",
+      "bunq": "ts-node src/scripts/bunq.ts",
       "test": "NODE_ENV=test mocha --config ./mochaConfig.json -r ts-node/register src/**/*.spec.ts"
    }
 }

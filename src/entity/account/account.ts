@@ -1,6 +1,6 @@
 // External imports
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
-import {IsDefined, IsIBAN, IsInt, IsOptional, IsString, Validate} from "class-validator"
+import {IsIn, IsDefined, IsIBAN, IsInt, IsNumber, IsOptional, IsString, Validate, ArrayNotEmpty, IsInstance} from "class-validator"
 
 // Internal imports
 import { Payment } from "../payment/payment"
@@ -17,26 +17,23 @@ export class Account {
     @IsString()
     name: string
     
-    @Column()
-    @IsDefined()
-    @IsInt({message: "Balance must be an integer."})
+    @Column({default: 0, nullable: true})
+    @IsOptional()
+    @IsInt()
     balance: number
 
     @Column()
+    @IsDefined()
     @Validate(IsOneOf, ["Bank", "Crypto", "Cash"])
     @IsString()
     type: string
 
-    @Column({
-        nullable: true
-    })
+    @Column({nullable: true})
     @IsOptional()
     @IsIBAN()
     iban: string
 
-    @Column({
-        nullable: true
-    })
+    @Column({nullable: true})
     @IsOptional()
     @IsInt()
     bunqid: number

@@ -14,7 +14,16 @@ describe("extract or create payee middleware", function() {
         request(`http://localhost:${port}`)
             .get("/test/extract-or-create-payee")
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
-            .expect(400, done)
+            .expect(200)
+            .expect(function(res) {
+                let payee = res.body.payee
+                if (payee == null) {
+                    return true
+                } else {
+                    throw new Error("Returned payee should be null but isn't.")
+                }
+            })
+            .end(done)
     })
 
 
@@ -80,6 +89,15 @@ describe("extract or create payee middleware", function() {
             .get("/test/extract-or-create-payee")
             .send({payeeid: 42})
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
-            .expect(400, done)
+            .expect(200)
+            .expect(function(res) {
+                let payee = res.body.payee
+                if (payee == null) {
+                    return true
+                } else {
+                    throw new Error("Returned payee should be null but isn't.")
+                }
+            })
+            .end(done)
     })
 })

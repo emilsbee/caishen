@@ -5,7 +5,6 @@ require('dotenv').config()
 // Internal imports
 import DatabaseConnection from "./DatabaseConnection";
 import Server  from "./server/Server";
-import {execute} from "./scripts/randomScript"
 
 
 const startApp = async () => {

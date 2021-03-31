@@ -10,6 +10,7 @@ import accountRouter from "../route/account/accountRoute"
 import paymentCategoryRouter from "../route/paymentCategory/paymentCategoryRoute"
 import {authenticateJWT} from "../middleware/authenticateJWT"
 import testRoutes from "../test/testRoutes"
+import logger from "../middleware/logger"
 
 /**
  * After creating a new instance of a server, the method startServer() method
@@ -25,6 +26,7 @@ export default class Server {
 
         // Middleware
         this.app.use(express.json())
+        this.app.use(logger)
         
         // Routers
         this.app.use("/auth", authRoute)
@@ -32,7 +34,6 @@ export default class Server {
         this.app.use("/account", authenticateJWT, accountRouter)
         this.app.use("/paymentListener", paymentListenerRouter)
         this.app.use("/payment-category", paymentCategoryRouter)
-        
         // Setup test routes
         if (process.env.NODE_ENV === "test") {
             this.app.use("/test", testRoutes)

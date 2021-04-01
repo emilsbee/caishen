@@ -34,6 +34,7 @@ export default class Server {
         this.app.use("/account", authenticateJWT, accountRouter)
         this.app.use("/paymentListener", paymentListenerRouter)
         this.app.use("/payment-category", paymentCategoryRouter)
+        
         // Setup test routes
         if (process.env.NODE_ENV === "test") {
             this.app.use("/test", testRoutes)

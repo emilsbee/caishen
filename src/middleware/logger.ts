@@ -1,5 +1,6 @@
-
 export default (req, res, next) => {
-    console.log("New request!")
+    if (process.env.NODE_ENV === "development") {
+        console.log("Request: ", {...req.body, time: new Date(), url: req.originalUrl})
+    }
     next()
 };

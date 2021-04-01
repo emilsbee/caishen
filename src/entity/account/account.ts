@@ -32,11 +32,6 @@ export class Account {
     @IsOptional()
     @IsIBAN()
     iban: string
-
-    @Column({nullable: true})
-    @IsOptional()
-    @IsInt()
-    bunqid: number
     
     @OneToMany(() => Payment, payment => payment.category)
     payments: Payment[]

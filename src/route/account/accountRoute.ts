@@ -11,20 +11,18 @@ var router = express.Router()
 
 /**
  * Route for creating an account.
- * Request body must include iban: string, name: string, balance: number, type: string,
- * payments: Payment[], bunqid: number.
+ * @param {string} iban the iban of account being created. 
+ * @param {string} name the name of account being created.
+ * @param {string} type the type of account: crypto, cash or bank.
  */
 router.post("/", async (req, res, next) => {
 
-    const { iban, name, balance, type, payments, bunqid  } = req.body;
+    const { iban, name, type } = req.body;
 
     let account = new Account()
-    account.iban = iban
+    account.iban = iban ? iban : null
     account.name = name
-    account.balance = balance
     account.type = type
-    account.payments = payments
-    account.bunqid = bunqid
 
     validate(account).then(async errors => {
 
@@ -36,9 +34,9 @@ router.post("/", async (req, res, next) => {
             let accountRepository = getRepository(Account)
             let returnedAccount:Account
             try {
-                await accountRepository.save(account)
+                returnedAccount = await accountRepository.save(account)
             } catch (e) {
-                next({code: 400, message: e})
+                next({code: 400, message: "Couldn't save the account."})
             }
         
             res.json(returnedAccount)
@@ -48,18 +46,60 @@ router.post("/", async (req, res, next) => {
 })
 
 /**
- * Route for fetching single or multiple accounts. 
- * Request body must contain either a single on array of accountids.
+ * Route for deleting a given account by an id. 
+ * @param {string} accountid The id of account to delete.
+ */
+router.delete("/", async (req, res, next) => {
+    const { accountid } = req.body
+
+    let accountRepository = getRepository(Account)
+
+    try {
+        await accountRepository.delete(accountid)
+        res.status(202).send()
+    } catch (e) {
+        res.next({code: 500, message: "Couldn't delete the given account."})
+
+    }
+})
+
+/**
+ * Route for fetching all accounts.
+ * @return {AccountType[]} An array that is either empty or contains the account objects.
+ */
+router.get("/all", async (req, res) => {
+
+    let accountRepository = getRepository(Account)
+
+    try {
+        let accounts = await accountRepository.find()
+        res.json(accounts)
+    } catch (e) {
+        res.next({code: 500, message: "Couldn't fetch accounts."})
+
+    }
+
+})
+
+/**
+ * Route for fetching single account by given id. 
+ * Request body must contain an accountid.
  * @param {string} req.body.accountid the accountid of account being fetched. 
+ * @return {AccountType[]} An array that is either empty or contains the account object.
  */
 router.get("/", async (req, res) => {
     
     const { accountid } = req.body
 
     let accountRepository = getRepository(Account)
-    let account = await accountRepository.find({id: accountid})
 
-    res.json(account)
+    try {
+        let account = await accountRepository.find({id: accountid})
+        res.json(account)
+    } catch (e) {
+        res.next({code: 500, message: "Couldn't fetch account."})
+    }
+
 })
 
 export default router

@@ -6,7 +6,7 @@
       ],
       "target": "es2017",
       "module": "commonjs",
-      "moduleResolution": "node",
+      "moduleResolution": "Node",
       "outDir": "./build",
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,

@@ -16,12 +16,10 @@ router.post("/login", (req, res) => {
         // Generate an access token
         const accessToken = jwt.sign({ username: user.username }, process.env.DEV_JWT_SECRET);
 
-        res.json({
-            accessToken
-        });
+        res.json(accessToken);
 
     } else {
-        res.json('Username or password incorrect');
+        res.status(401).json("Username/password incorrect.")
     }
 })
 

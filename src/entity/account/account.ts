@@ -1,6 +1,6 @@
 // External imports
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
-import {IsIn, IsDefined, IsIBAN, IsInt, IsNumber, IsOptional, IsString, Validate, ArrayNotEmpty, IsInstance} from "class-validator"
+import {IsDefined, IsIBAN, IsInt, IsOptional, IsString, Validate, IsCurrency} from "class-validator"
 
 // Internal imports
 import { Payment } from "../payment/payment"
@@ -32,6 +32,12 @@ export class Account {
     @IsOptional()
     @IsIBAN()
     iban: string
+
+    @Column()
+    @IsDefined()
+    @IsCurrency()
+    currency: string
+    
     
     @OneToMany(() => Payment, payment => payment.category)
     payments: Payment[]

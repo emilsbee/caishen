@@ -14,15 +14,17 @@ var router = express.Router()
  * @param {string} iban the iban of account being created. 
  * @param {string} name the name of account being created.
  * @param {string} type the type of account: crypto, cash or bank.
+ * @param {string} currency the currency of account.
  */
 router.post("/", async (req, res, next) => {
 
-    const { iban, name, type } = req.body;
+    const { iban, name, type, currency } = req.body;
 
     let account = new Account()
     account.iban = iban ? iban : null
     account.name = name
     account.type = type
+    account.currency = currency
 
     validate(account).then(async errors => {
 

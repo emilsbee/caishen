@@ -39,6 +39,10 @@ export class Account {
     @IsString()
     currency: string
     
+    @Column({nullable:true})
+    @IsOptional()
+    @IsString()
+    description: string
     
     @OneToMany(() => Payment, payment => payment.category)
     payments: Payment[]

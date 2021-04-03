@@ -23,7 +23,7 @@ router.post("/", (req, res, next) => {
     const sigHeaderName = 'X-Hub-Signature-256'
     const sigHashAlg = 'sha256'
 
-    const sig = Buffer.from(req.get(sigHeaderName) || '', 'utf8')
+    const sig = req.get(sigHeaderName) 
     const hmac = crypto.createHmac(sigHashAlg, process.env.GITHUB_WEBHOOK_SECRET)
     const digest = Buffer.from(sigHashAlg + '=' + hmac.update(req.rawBody).digest('hex'), 'utf8')
     

@@ -15,7 +15,9 @@ router.post("/", (req, res, next) => {
     const digest = Buffer.from(sigHashAlg + '=' + hmac.update(req.rawBody).digest('hex'), 'utf8')
     
     if (sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
-        next({code: 400, message:`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`})
+        // next({code: 400, message:`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`})
+        console.log("Invalid")
+        res.status(200).send()
     } else {
         console.log("Valid")
         res.status(200).send()

@@ -8,6 +8,7 @@ import authRoute from "../route/authentication/authRoute"
 import paymentListenerRouter from "../route/paymentListener/paymentListenerRoute"
 import accountRouter from "../route/account/accountRoute"
 import paymentCategoryRouter from "../route/paymentCategory/paymentCategoryRoute"
+import continuousDeploymentRouter from "../route/continuousDeployment/continuousDeploymentRoute"
 import {authenticateJWT} from "../middleware/authenticateJWT"
 import testRoutes from "../test/testRoutes"
 import logger from "../middleware/logger"
@@ -34,6 +35,7 @@ export default class Server {
         this.app.use("/account", authenticateJWT, accountRouter)
         this.app.use("/paymentListener", paymentListenerRouter)
         this.app.use("/payment-category", paymentCategoryRouter)
+        this.app.use("/continuous-deployment", continuousDeploymentRouter)
         
         // Setup test routes
         if (process.env.NODE_ENV === "test") {

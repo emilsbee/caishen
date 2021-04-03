@@ -18,13 +18,14 @@ var router = express.Router()
  */
 router.post("/", async (req, res, next) => {
 
-    const { iban, name, type, currency } = req.body;
+    const { iban, name, type, currency, description } = req.body;
 
     let account = new Account()
     account.iban = iban ? iban : null
     account.name = name
     account.type = type
     account.currency = currency
+    account.description = description
 
     validate(account).then(async errors => {
 

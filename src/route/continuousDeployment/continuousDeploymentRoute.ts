@@ -19,7 +19,7 @@ router.use(function(req, res, next) {
 
 router.post("/", (req, res, next) => {
     const modifiedFiles = req.body.head_commit.modified
-
+    console.log("Before", req.rawBody)
     const sigHeaderName = 'X-Hub-Signature-256'
     const sigHashAlg = 'sha256'
 
@@ -27,7 +27,7 @@ router.post("/", (req, res, next) => {
     const hmac = crypto.createHmac(sigHashAlg, process.env.GITHUB_WEBHOOK_SECRET)
     const digest = Buffer.from(sigHashAlg + '=' + hmac.update(req.rawBody).digest('hex'), 'utf8')
     
-    console.log("Before")
+    
     if(sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
         console.log("Invalid")
         next({code: 400, message:`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`})

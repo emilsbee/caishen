@@ -1,20 +1,7 @@
 // External imports
 var express = require("express")
 var router = express.Router()
-const crypto = require('crypto')
-
-router.use(function(req, res, next) {
-    req.rawBody = '';
-    req.setEncoding('utf8');
-  
-    req.on('data', function(chunk) { 
-      req.rawBody += chunk;
-    });
-  
-    req.on('end', function() {
-      next();
-    });
-  });
+const crypto = require('crypto');
 
 router.post("/", (req, res, next) => {
     const modifiedFiles = req.body.head_commit.modified

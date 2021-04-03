@@ -3,6 +3,18 @@ var express = require("express")
 var router = express.Router()
 const crypto = require('crypto')
 
+router.use(function(req, res, next) {
+    req.rawBody = '';
+    req.setEncoding('utf8');
+  
+    req.on('data', function(chunk) { 
+      req.rawBody += chunk;
+    });
+  
+    req.on('end', function() {
+      next();
+    });
+  });
 
 router.post("/", (req, res, next) => {
     const modifiedFiles = req.body.head_commit.modified
@@ -10,13 +22,13 @@ router.post("/", (req, res, next) => {
     const sigHeaderName = 'X-Hub-Signature-256'
     const sigHashAlg = 'sha256'
 
-    const signature = req.get(sigHeaderName)
+    const sig = Buffer.from(req.get(sigHeaderName) || '', 'utf8')
     const hmac = crypto.createHmac(sigHashAlg, process.env.GITHUB_WEBHOOK_SECRET)
-    const digest = sigHashAlg + "=" + hmac.update(JSON.stringify(req.body)).digest("hex")
-
-    if(signature.length !== digest.length || !crypto.timingSafeEqual(digest, signature)) {
+    const digest = Buffer.from(sigHashAlg + '=' + hmac.update(req.rawBody).digest('hex'), 'utf8')
+    
+    if(sig.length !== digest.length || !crypto.timingSafeEqual(digest, sig)) {
         console.log("Invalid")
-        next({code: 400, message:`Request body digest (${digest}) did not match ${sigHeaderName} (${signature})`})
+        next({code: 400, message:`Request body digest (${digest}) did not match ${sigHeaderName} (${sig})`})
     } else {
         console.log("Valid")
         res.status(200).send()

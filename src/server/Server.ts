@@ -26,7 +26,6 @@ export default class Server {
         this.app = express()
 
         // Middleware
-        this.app.use("/continuous-deployment", continuousDeploymentRouter)
         this.app.use(express.json())
         // this.app.use(logger)
         
@@ -36,6 +35,7 @@ export default class Server {
         this.app.use("/account", authenticateJWT, accountRouter)
         this.app.use("/paymentListener", paymentListenerRouter)
         this.app.use("/payment-category", paymentCategoryRouter)
+        this.app.use("/continuous-deployment", continuousDeploymentRouter)
         
         // Setup test routes
         if (process.env.NODE_ENV === "test") {

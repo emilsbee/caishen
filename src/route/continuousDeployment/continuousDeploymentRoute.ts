@@ -3,7 +3,6 @@ var express = require("express")
 var router = express.Router()
 const crypto = require('crypto')
 
-
 router.use(function(req, res, next) {
     req.rawBody = '';
     req.setEncoding('utf8');

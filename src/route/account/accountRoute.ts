@@ -41,7 +41,7 @@ router.post("/", async (req, res, next) => {
                 next({code: 400, message: "Couldn't save the account."})
             }
         
-            res.json("returnedAccount")
+            res.json(returnedAccount)
         }
     })
 

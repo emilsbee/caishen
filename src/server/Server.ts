@@ -27,7 +27,7 @@ export default class Server {
 
         // Middleware
         this.app.use(express.json())
-        // this.app.use(logger)
+        this.app.use(logger)
         
         // Routers
         this.app.use("/auth", authRoute)

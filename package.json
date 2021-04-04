@@ -27,8 +27,7 @@
       "typeorm": "0.2.31"
    },
    "scripts": {
-      "start": "export NODE_ENV=development && ts-node src/index.ts",
-      "start2": "nodemon --exec 'ts-node' src/index.ts",
+      "start": "export NODE_ENV=development && nodemon --exec 'ts-node' src/index.ts",
       "start:debug": "DEBUG=* ts-node src/index.ts",
       "bunq": "ts-node src/scripts/bunq.ts",
       "test": "NODE_ENV=test mocha --config ./mochaConfig.json -r ts-node/register src/**/*.spec.ts"

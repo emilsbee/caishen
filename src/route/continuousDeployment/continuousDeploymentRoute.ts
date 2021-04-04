@@ -11,7 +11,7 @@ router.post("/", (req, res, next) => {
     exec("git reset --hard", execCallback)
     exec("git clean -df", execCallback)
     exec("git pull -f", execCallback)
-    exec("yarn run start2", execCallback)
+    exec("yarn run start", execCallback)
     res.status(200).send()
 })
 

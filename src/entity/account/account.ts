@@ -35,7 +35,7 @@ export class Account {
 
     @Column()
     @IsDefined()
-    @Validate(IsOneOf, ["EUR"])
+    @Validate(IsOneOf, ["EUR", "USD", "GBP"])
     @IsString()
     currency: string
     

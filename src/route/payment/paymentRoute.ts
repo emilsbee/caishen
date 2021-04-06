@@ -1,30 +1,138 @@
 // External imports
-import {getRepository} from "typeorm"
+import {getManager, getRepository, Transaction} from "typeorm"
 import {validate} from "class-validator"
 var express = require("express")
-var router = express.Router()
 
 // Internal imports
 import { Payment } from "../../entity/payment/payment"
 import { Payee } from "../../entity/payee/payee"
 import {extractOrCreatePayee} from "../../middleware/extractOrCreatePayee"
 import { extractOrCreatePaymentCategory } from "../../middleware/extractOrCreatePaymentCategory"
+import { PaymentCategory } from "../../entity/paymentCategory/paymentCategory"
+import { Account } from "../../entity/account/account"
 
+var router = express.Router()
 
 /**
  * Route for creating a new payment.
  */
-router.post("/", extractOrCreatePayee, extractOrCreatePaymentCategory, (req, res, next) => {
-    let { payee, paymentCategory, amount, type } = req.body
-    res.json({payee, paymentCategory, amount, type})
+router.post("/", async (req, res, next) => {
+    let { 
+        payeeName, 
+        paymentCategory, 
+        amount, 
+        type, 
+        accountid,
+        note, 
+        description
+    } = req.body
+
+    try {
+        await getManager().transaction("SERIALIZABLE",async transactionalEntityManager => {
+            let newPayment = new Payment()
+
+            // Payee section
+            let foundPayee = await transactionalEntityManager.find(Payee, {name: payeeName})
+            let newPayee:Payee
+            if (foundPayee.length === 0) {
+                newPayee = new Payee()
+                newPayee.name = payeeName
+                newPayee.payments = [newPayment]
+
+                let payeeErrors:any[]
+                payeeErrors = await validate(newPayee)
+                
+                if (payeeErrors.length > 0) {
+                    next({code: 400, message: payeeErrors})
+                } else {
+                    await transactionalEntityManager.save(newPayee)
+                }
+            } else {
+                await transactionalEntityManager.save(Payee, {id: foundPayee[0].id, payments: [newPayment]})
+            }
+
+            // Payment category section
+            let foundPaymentCategory = await transactionalEntityManager.find(PaymentCategory, {name: paymentCategory})
+            let newPaymentCategory:PaymentCategory
+
+            if (foundPaymentCategory.length === 0) {
+                newPaymentCategory = new PaymentCategory()
+                newPaymentCategory.name = paymentCategory
+                newPaymentCategory.payments = [newPayment]
+
+                let paymentCategoryErrors:any[]
+                paymentCategoryErrors = await validate(newPaymentCategory)
+
+                if (paymentCategoryErrors.length > 0) {
+                    next({code: 400, message: paymentCategoryErrors})
+                } else {
+                    await transactionalEntityManager.save(newPaymentCategory)
+                }
+            } else {
+                await transactionalEntityManager.save(PaymentCategory, {id: foundPaymentCategory[0].id, payments: [newPayment]})
+            }
+
+            // Account section
+            let foundAccount = await transactionalEntityManager.find(Account, {id: accountid})
+            if (foundAccount.length === 0) {
+                next({code: 400, message: "You must provide a valid accountid."})
+            } else {
+                await transactionalEntityManager.save(Account,{id: accountid, payments: [newPayment]})
+            }
+            
+            // New payment section
+            newPayment.account =  foundAccount[0]
+            newPayment.amount = amount
+            if (newPaymentCategory) {
+                newPayment.category = newPaymentCategory
+            } else {
+                newPayment.category = foundPaymentCategory[0]
+            }
+            newPayment.currency = foundAccount[0].currency
+            newPayment.description = description
+            newPayment.note = note
+            if (newPayee) {
+                newPayment.payee = newPayee
+            } else {
+                newPayment.payee = foundPayee[0]
+            }
+            newPayment.type = type
+            
+            let newPaymentErrors = await validate(newPayment)
+            
+            if (newPaymentErrors.length > 0) {
+                next({code: 400, message: newPaymentErrors})
+            } else {
+                await transactionalEntityManager.save(Payment, newPayment)
+                res.json(newPayment)
+            }
+        })
+
+    } catch (e) {
+        console.log(e)
+        next({code: 500, message: "Failed to complete payment creation transaction."})
+    }
 })
+
 
 router.get("/", (req, res) => {
     res.json({payment: "Returning single payment"})
 })
 
-router.get("/batch", (req, res) => {
-    res.json({payments: "Returning a batch of payments"})
+/**
+ * Get all payments for a given account.
+ * @param accountid The accountid of account from which to fetch payments.
+ */
+router.get("/all", async (req, res, next) => {
+    let paymentRepository = getRepository(Payment)
+    console.log(req.body.accountid)
+    try {
+        let payments = await paymentRepository.find({where: {account: req.body.accountid}})
+        res.json(payments)
+    } catch (e) {
+        next({code: 500, message: "Couldn't fetch payments."})
+
+    }
 })
 
 export default router

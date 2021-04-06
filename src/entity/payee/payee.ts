@@ -1,7 +1,9 @@
-import {Unique, Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
-import { Payment } from "../payment/payment"
-import { IsPayeeAlreadyExist } from "../../classValidators/IsUniquePayeeValidator"
+// External imports
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
 import { IsDefined, IsIBAN, IsOptional, IsString } from "class-validator"
+
+// Internal imports
+import { Payment } from "../payment/payment"
 
 @Entity()
 // @Unique(["name"])
@@ -13,15 +15,7 @@ export class Payee {
     @Column()
     @IsDefined()
     @IsString()
-    // @IsPayeeAlreadyExist({message: "A payee with the given name alrady exists."})
     name: string
-
-    @Column({
-        nullable: true
-    })
-    @IsOptional()
-    @IsIBAN()
-    iban: string
 
     @OneToMany(() => Payment, payment => payment.payee)
     payments: Payment[]

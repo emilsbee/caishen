@@ -69,7 +69,7 @@ export class Payment {
 
     @Column()
     @IsDefined()
-    @IsCurrency()
+    @Validate(IsOneOf, ["EUR", "USD", "GBP"])
     currency: string
 
     @Column({nullable: true})

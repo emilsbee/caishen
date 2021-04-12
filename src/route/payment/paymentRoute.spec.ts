@@ -17,39 +17,32 @@ let connection:Connection
 
 beforeEach( async () => {
     connection = database.getConnection()
-    await connection.getRepository(Account).save(accountFixture)
+    await connection.getRepository(Account).save(accountFixture.valid)
 })
 
 describe("payment route", function() {
-    it ('Responds with 400 when no valid accountid is provided.', function(done) {
+    it ('POST /payment Responds with 400 when invalid accountid is provided.', function(done) {
         request(`http://localhost:${port}`)
             .post("/payment")
-            .send({
-                "payeeName": "Jumbo",
-                "paymentCategory": "Groceries",
-                "amount": 2000,
-                "accountid": "bfcf5872-1999-4b62-b7f7-09f224f7c53d",
-                "description": "Eggs, milk and chocolate.",
-                
-            })
+            .send(paymentFixture.invalidAccountid)
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
             .expect(400, done)
     })
 
     
 
-    it ("Responds with 202 and the created payment, payee and payment category when payment succesfully created.", function(done) {
+    it ("POST /payment Responds with 202 and the created payment, payee and payment category when payment succesfully created.", function(done) {
         request(`http://localhost:${port}`)
             .post("/payment")
-            .send(paymentFixture)
+            .send(paymentFixture.valid)
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
             .expect(202)
             .expect(function(res) {
                 expect(res.body).to.have.length(1)
                 expect(res.body[0].payee).to.exist
-                expect(res.body[0].payee.name).to.equal(paymentFixture.payeeName)
+                expect(res.body[0].payee.name).to.equal(paymentFixture.valid.payeeName)
                 expect(res.body[0].category).to.exist
-                expect(res.body[0].category.name).to.equal(paymentFixture.paymentCategory)
+                expect(res.body[0].category.name).to.equal(paymentFixture.valid.paymentCategory)
             })
             .end(done)
         

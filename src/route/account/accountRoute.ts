@@ -1,5 +1,5 @@
 // External imports
-import {getRepository} from "typeorm"
+import {getManager, getRepository} from "typeorm"
 import {validate} from "class-validator"
 var jwt = require("jsonwebtoken")
 var express = require("express")
@@ -20,31 +20,39 @@ router.post("/", async (req, res, next) => {
 
     const { iban, name, type, currency, description } = req.body;
 
-    let account = new Account()
-    account.iban = iban ? iban : null
-    account.name = name
-    account.type = type
-    account.currency = currency
-    account.description = description
-
-    validate(account).then(async errors => {
-
-        if (errors.length > 0) {
-            
-            next({code: 400, message: errors})
-        } else {
-
-            let accountRepository = getRepository(Account)
-            let returnedAccount:Account
-            try {
-                returnedAccount = await accountRepository.save(account)
-            } catch (e) {
-                next({code: 400, message: "Couldn't save the account."})
-            }
+    try {
+        await getManager().transaction("SERIALIZABLE",async transactionalEntityManager => {
+            let account = new Account()
+            account.iban = iban ? iban : null
+            account.name = name
+            account.type = type
+            account.currency = currency
+            account.description = description
         
-            res.json(returnedAccount)
-        }
-    })
+            validate(account).then(async errors => {
+        
+                if (errors.length > 0) {
+                    
+                    next({code: 400, message: errors})
+                } else {
+        
+                    let accountRepository = transactionalEntityManager.getRepository(Account)
+                    let returnedAccount:Account
+                    try {
+                        returnedAccount = await accountRepository.save(account)
+                    } catch (e) {
+                        next({code: 400, message: "Couldn't save the account."})
+                    }
+                
+                    res.status(202).json([returnedAccount])
+                }
+            })
+        })
+    } catch (e) {
+        next({code: 500, message: "Failed to complete account creation transaction."})
+    }
+
+    
 
 })
 

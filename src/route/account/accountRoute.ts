@@ -97,7 +97,7 @@ router.get("/", async (req, res) => {
     let accountRepository = getRepository(Account)
 
     try {
-        let account = await accountRepository.find({id: accountid})
+        let account = await accountRepository.find({where: {id: accountid}})
         res.json(account)
     } catch (e) {
         res.next({code: 500, message: "Couldn't fetch account."})

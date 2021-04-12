@@ -13,6 +13,7 @@ const startApp = async () => {
     
     await databaseConnection.startDb()
     await server.startServer()
+
 }
 
 startApp()

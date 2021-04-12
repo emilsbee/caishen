@@ -1,40 +1,74 @@
 // External imports
-import {createConnection} from "typeorm";
+import {Connection, createConnection} from "typeorm";
 
+/**
+ * Manages the connection to the database.
+ */
 export default class DatabaseConnection {
+    private connection: Connection
 
-    async startDb() {
+    /**
+     * Getter for connection.
+     * @returns Connection to the database.
+     */
+    public getConnection = ():Connection => {
+        return this.connection
+    }
+
+    /**
+     * Starts the development/test database.
+     */
+    public async startDb():Promise<void> {
         try {
-            await createConnection()
-            console.log("Database connection created.")
+            this.connection = await createConnection()
+            console.info("Database connection created.")
         } catch (e) {
-            console.log("Failed to start the database. ERROR: ", e)
+            console.error("Failed to start the database. ERROR: ", e)
         }
     }
 
-    async startTestDb() {
-        return createConnection({
-                
-            type: "sqlite",
-            database: "testdatabase.sqlite",
-            dropSchema: true,
-            synchronize: true,
-            logging: false,
-            entities: [
-                "src/entity/**/*.ts"
-            ],
-            migrations: [
-                "src/migration/**/*.ts"
-            ],
-            subscribers: [
-                "src/subscriber/**/*.ts"
-            ],
-            cli: {
-                entitiesDir: "src/entity",
-                migrationsDir: "src/migration",
-                subscribersDir: "src/subscriber"
-            } 
-        })
+    /**
+     * Starts the test database.
+     */
+    public async startTestDb():Promise<void> {
+        try {
+            this.connection = await createConnection({
+                type: "sqlite",
+                database: "testdatabase.sqlite",
+                dropSchema: true,
+                synchronize: true,
+                logging: false,
+                entities: [
+                    "src/entity/**/*.ts"
+                ],
+                migrations: [
+                    "src/migration/**/*.ts"
+                ],
+                subscribers: [
+                    "src/subscriber/**/*.ts"
+                ],
+                cli: {
+                    entitiesDir: "src/entity",
+                    migrationsDir: "src/migration",
+                    subscribersDir: "src/subscriber"
+                } 
+            })
+        } catch (e) {
+            console.error("Failed to start the test database. ERROR: ", e)
+        }
+    }
+
+    /**
+     * Closes the current database connection if it exists.
+     */
+    public async close():Promise<void> {
+        if (this.connection && this.connection.isConnected) {
+            try {
+                await this.connection.close()
+            } catch (e) {
+                console.error(e)
+            }
+        }
     }
 }
 

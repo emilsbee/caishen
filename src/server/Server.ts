@@ -18,16 +18,19 @@ import logger from "../middleware/logger"
  * has to be called to start the server listening.
  */
 export default class Server {
-    static port:number = 3000
+    public static port:number = 3000 // Port on which server is always started
 
-    app: Application
+    private app: Application // Express app instance
 
-    constructor() {
+    public constructor() {
         this.app = express()
 
         // Middleware
         this.app.use(express.json())
-        this.app.use(logger)
+
+        if (process.env.NODE_ENV === "development") {
+            this.app.use(logger)
+        }
         
         // Routers
         this.app.use("/auth", authRoute)
@@ -49,7 +52,7 @@ export default class Server {
     /**
      * The final error handler route. 
      */
-    startErrorHandler() {
+    public startErrorHandler():void {
         this.app.use(function (error, req, res, next) {
             let code:number = error.code || 500
             let message:string = error.message || "An error occured."
@@ -58,18 +61,18 @@ export default class Server {
         })
     }
 
-    async startServer() {
-        await this.startListening()
-        if (process.env.NODE_ENV !== "test") {
-            console.log("Server started on port", Server.port)
-        }
+    /**
+     * Starts the server.
+     */
+    public startServer():void {
+        this.app.listen(Server.port)
     }
 
-    async startListening() {
-        return this.app.listen(Server.port)
-    }
-
-    getApp() {
+    /**
+     * Getter for express app instance.
+     * @returns Express app instance.
+     */
+    public getApp():Application {
         return this.app
     }
 }

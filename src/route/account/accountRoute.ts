@@ -1,5 +1,5 @@
 // External imports
-import {DeleteResult, getManager, getRepository} from "typeorm"
+import {getManager, getRepository} from "typeorm"
 import {validate} from "class-validator"
 var jwt = require("jsonwebtoken")
 var express = require("express")

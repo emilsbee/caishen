@@ -2,7 +2,7 @@ var jwt = require("jsonwebtoken")
 var express = require("express")
 var router = express.Router()
 
-router.post("/login", (req, res) => {
+router.post("/login", (req, res, next) => {
     // Read username and password from request body
     const { username, password } = req.body;
     
@@ -16,10 +16,10 @@ router.post("/login", (req, res) => {
         // Generate an access token
         const accessToken = jwt.sign({ username: user.username }, process.env.DEV_JWT_SECRET);
 
-        res.json({accessToken});
+        res.status(200).json({accessToken});
 
     } else {
-        res.status(401).json("Username/password incorrect.")
+        next({code: 401, message:"Username/password incorrect."})
     }
 })
 

@@ -26,6 +26,14 @@ router.post("/", async (req, res, next) => {
     try {
         await getManager().transaction("SERIALIZABLE",async transactionalEntityManager => {
             let newPayment = new Payment()
+
+            // Account section
+            let foundAccount = await transactionalEntityManager.find(Account, {id: accountid})
+            if (foundAccount.length === 0) {
+                return next({code: 400, message: "You must provide a valid accountid."})
+            } else {
+                await transactionalEntityManager.save(Account,{id: accountid, payments: [newPayment]})
+            }
             
             // Payee section
             let foundPayee = await transactionalEntityManager.find(Payee, {name: payeeName})
@@ -61,6 +69,7 @@ router.post("/", async (req, res, next) => {
                 paymentCategoryErrors = await validate(newPaymentCategory)
 
                 if (paymentCategoryErrors.length > 0) {
+
                     return next({code: 400, message: paymentCategoryErrors})
                 } else {
                     await transactionalEntityManager.save(PaymentCategory, newPaymentCategory)
@@ -69,13 +78,7 @@ router.post("/", async (req, res, next) => {
                 await transactionalEntityManager.save(PaymentCategory, {id: foundPaymentCategory[0].id, payments: [newPayment]})
             }
 
-            // Account section
-            let foundAccount = await transactionalEntityManager.find(Account, {id: accountid})
-            if (foundAccount.length === 0) {
-                return next({code: 400, message: "You must provide a valid accountid."})
-            } else {
-                await transactionalEntityManager.save(Account,{id: accountid, payments: [newPayment]})
-            }
+            
             // New payment section
             newPayment.account =  foundAccount[0]
             
@@ -110,6 +113,7 @@ router.post("/", async (req, res, next) => {
         })
 
     } catch (e) {
+        console.log(e)
         next({code: 500, message: "Failed to complete payment creation transaction."})
     }
 })
@@ -124,13 +128,19 @@ router.get("/", (req, res) => {
  * @param accountid The accountid of account from which to fetch payments.
  */
 router.get("/all", async (req, res, next) => {
+    const {accountid} = req.body
+
+    if (!accountid) {
+        next({code: 400, message: "You must provide an accountid."})
+    }
+
     let paymentRepository = getRepository(Payment)
-    console.log(req.body.accountid)
+    
     try {
         let payments = await paymentRepository.find({where: {account: req.body.accountid}})
-        res.json(payments)
+        res.status(200).json(payments)
     } catch (e) {
-        next({code: 500, message: "Couldn't fetch payments."})
+        next({code: 400, message: "Couldn't fetch payments."})
 
     }
 })

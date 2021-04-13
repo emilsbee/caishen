@@ -1,31 +1,20 @@
-require('dotenv').config()
-
 // Internal imports
+require('dotenv').config()
 import DatabaseConnection from "../DatabaseConnection"
 import Server from "../server/Server"
+
 
 export let database:DatabaseConnection
 export let server:Server
 
 /**
- * Sets up the server before all tests.
+ * Sets up the server and database connection before all tests.
  */
 before(async () => {
+    database = new DatabaseConnection()
+    await database.startTestDb()    
     server = new Server()
     server.startServer()
-})
-
-/**
- * Before each test, the database is dropped and a new connection made.
- */
-beforeEach(async () => {
-    if (database && database.getConnection().isConnected) {
-        await database.getConnection().dropDatabase()
-        await database.close()
-    }
-
-    database = new DatabaseConnection()
-    await database.startTestDb()
 })
 
 /**

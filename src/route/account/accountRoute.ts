@@ -1,7 +1,6 @@
 // External imports
 import {getManager, getRepository} from "typeorm"
 import {validate} from "class-validator"
-var jwt = require("jsonwebtoken")
 var express = require("express")
 
 // Internal imports
@@ -18,11 +17,14 @@ var router = express.Router()
  */
 router.post("/", async (req, res, next) => {
 
-    const { iban, name, type, currency, description } = req.body;
+    const { iban, name, type, currency, description, id } = req.body;
 
     try {
         await getManager().transaction("SERIALIZABLE",async transactionalEntityManager => {
             let account = new Account()
+            if (id) {
+                account.id = id
+            }
             account.iban = iban ? iban : null
             account.name = name
             account.type = type
@@ -32,10 +34,8 @@ router.post("/", async (req, res, next) => {
             validate(account).then(async errors => {
         
                 if (errors.length > 0) {
-                    
                     next({code: 400, message: errors})
                 } else {
-        
                     let accountRepository = transactionalEntityManager.getRepository(Account)
                     let returnedAccount:Account
                     try {
@@ -43,7 +43,6 @@ router.post("/", async (req, res, next) => {
                     } catch (e) {
                         next({code: 400, message: "Couldn't save the account."})
                     }
-                
                     res.status(201).json([returnedAccount])
                 }
             })
@@ -70,9 +69,9 @@ router.delete("/", async (req, res, next) => {
 
         if (account.length > 0) {
             await accountRepository.remove(account[0])
-            res.status(200).send()
+            res.status(200).json(account)
         } else {
-            res.status(404).send()
+            next({code: 404, message: "Couldn't delete the account."})
         }
         
     } catch (e) {
@@ -91,7 +90,7 @@ router.get("/all", async (req, res) => {
 
     try {
         let accounts = await accountRepository.find()
-        res.json(accounts)
+        res.status(200).json(accounts)
     } catch (e) {
         res.next({code: 500, message: "Couldn't fetch accounts."})
 
@@ -105,21 +104,22 @@ router.get("/all", async (req, res) => {
  * @param {string} req.body.accountid the accountid of account being fetched. 
  * @return {AccountType[]} An array that is either empty or contains the account object.
  */
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     
     const { accountid } = req.body
+    
+    if (!accountid) {
+        next({code: 400, message: "No accountid provided."})
+    }
 
     let accountRepository = getRepository(Account)
 
     try {
         let account = await accountRepository.find({id: accountid})
-        if (account.length > 0) {
-            res.status(200).json(account[0])
-        } else {
-            res.status(400).json()
-        }
+        
+        res.status(200).json(account)
     } catch (e) {
-        res.next({code: 500, message: "Couldn't fetch account."})
+        next({code: 500, message: "Couldn't fetch account."})
     }
 
 })

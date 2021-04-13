@@ -1,5 +1,5 @@
 // External imports
-import {CreateDateColumn, Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm"
+import {CreateDateColumn, Entity, Column, PrimaryGeneratedColumn, ManyToOne, AfterInsert, getManager } from "typeorm"
 import { IsDefined, IsInstance, IsInt, IsOptional, IsString, Validate} from "class-validator"
 
 // Internal imports
@@ -55,4 +55,10 @@ export class Payment {
     @IsOptional()
     @IsString()
     description: string
+
+    @AfterInsert()
+    async adjustBalance() {
+        let manager = getManager()
+        await manager.update(Account, this.account.id, {balance: this.account.balance + this.amount})
+    }
 }

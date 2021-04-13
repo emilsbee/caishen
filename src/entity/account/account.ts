@@ -46,4 +46,6 @@ export class Account {
     
     @OneToMany(() => Payment, payment => payment.category)
     payments: Payment[]
+
+
 }

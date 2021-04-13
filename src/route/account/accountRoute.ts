@@ -34,14 +34,14 @@ router.post("/", async (req, res, next) => {
             validate(account).then(async errors => {
         
                 if (errors.length > 0) {
-                    next({code: 400, message: errors})
+                    return next({code: 400, message: errors})
                 } else {
                     let accountRepository = transactionalEntityManager.getRepository(Account)
                     let returnedAccount:Account
                     try {
                         returnedAccount = await accountRepository.save(account)
                     } catch (e) {
-                        next({code: 400, message: "Couldn't save the account."})
+                        return next({code: 400, message: "Couldn't save the account."})
                     }
                     res.status(201).json([returnedAccount])
                 }

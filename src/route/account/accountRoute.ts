@@ -1,5 +1,5 @@
 // External imports
-import {getManager, getRepository} from "typeorm"
+import {DeleteResult, getManager, getRepository} from "typeorm"
 import {validate} from "class-validator"
 var jwt = require("jsonwebtoken")
 var express = require("express")
@@ -44,7 +44,7 @@ router.post("/", async (req, res, next) => {
                         next({code: 400, message: "Couldn't save the account."})
                     }
                 
-                    res.status(202).json([returnedAccount])
+                    res.status(201).json([returnedAccount])
                 }
             })
         })
@@ -66,10 +66,17 @@ router.delete("/", async (req, res, next) => {
     let accountRepository = getRepository(Account)
 
     try {
-        await accountRepository.delete(accountid)
-        res.status(202).send()
+        let account = await accountRepository.find({id: accountid})
+
+        if (account.length > 0) {
+            await accountRepository.remove(account[0])
+            res.status(200).send()
+        } else {
+            res.status(404).send()
+        }
+        
     } catch (e) {
-        res.next({code: 500, message: "Couldn't delete the given account."})
+        next({code: 500, message: "Couldn't delete the given account."})
 
     }
 })
@@ -105,8 +112,12 @@ router.get("/", async (req, res) => {
     let accountRepository = getRepository(Account)
 
     try {
-        let account = await accountRepository.find({where: {id: accountid}})
-        res.json(account)
+        let account = await accountRepository.find({id: accountid})
+        if (account.length > 0) {
+            res.status(200).json(account[0])
+        } else {
+            res.status(400).json()
+        }
     } catch (e) {
         res.next({code: 500, message: "Couldn't fetch account."})
     }

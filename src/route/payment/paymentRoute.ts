@@ -105,7 +105,7 @@ router.post("/", async (req, res, next) => {
                 await transactionalEntityManager.save(Payment, newPayment)
                 
                 let payment = await transactionalEntityManager.getRepository(Payment).find({id: newPayment.id})
-                res.status(202).json(payment)
+                res.status(201).json(payment)
             }
         })
 

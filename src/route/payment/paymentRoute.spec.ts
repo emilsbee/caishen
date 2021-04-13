@@ -20,8 +20,8 @@ beforeEach( async () => {
     await connection.getRepository(Account).save(accountFixture.valid)
 })
 
-describe("payment route", function() {
-    it ('POST /payment Responds with 400 when invalid accountid is provided.', function(done) {
+describe("POST /payment", function() {
+    it ('Responds with 400 when invalid accountid is provided.', function(done) {
         request(`http://localhost:${port}`)
             .post("/payment")
             .send(paymentFixture.invalidAccountid)
@@ -31,12 +31,12 @@ describe("payment route", function() {
 
     
 
-    it ("POST /payment Responds with 202 and the created payment, payee and payment category when payment succesfully created.", function(done) {
+    it ("Responds with 201 and the created payment, payee and payment category when payment succesfully created.", function(done) {
         request(`http://localhost:${port}`)
             .post("/payment")
             .send(paymentFixture.valid)
             .set({Authorization: 'Bearer '+process.env.TEST_VALID_SESSION_TOKEN})
-            .expect(202)
+            .expect(201)
             .expect(function(res) {
                 expect(res.body).to.have.length(1)
                 expect(res.body[0].payee).to.exist

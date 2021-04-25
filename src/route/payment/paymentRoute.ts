@@ -142,7 +142,7 @@ router.get("/all", async (req, res, next) => {
     let paymentRepository = getRepository(Payment)
     
     try {
-        let payments = await paymentRepository.find({where: {account: req.body.accountid}})
+        let payments = await paymentRepository.find({where: {account: accountid}})
         res.status(200).json(payments)
     } catch (e) {
         next({code: 400, message: "Couldn't fetch payments."})

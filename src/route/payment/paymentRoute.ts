@@ -13,6 +13,11 @@ var router = express.Router()
 
 /**
  * Route for creating a new payment.
+ * @param payeeName The name of the payee if doesn't exist, it is created.
+ * @param paymentCategory The payment category if doesn't exist, it is created.
+ * @param amount The amount, either positive or negative integer. 
+ * @param accountid Accountid of the account that the payment is related to.
+ * @param description The description of the payment.
  */
 router.post("/", async (req, res, next) => {
     let { 
@@ -128,8 +133,8 @@ router.get("/", (req, res) => {
  * @param accountid The accountid of account from which to fetch payments.
  */
 router.get("/all", async (req, res, next) => {
-    const {accountid} = req.body
-
+    const {accountid} = req.query
+    
     if (!accountid) {
         next({code: 400, message: "You must provide an accountid."})
     }

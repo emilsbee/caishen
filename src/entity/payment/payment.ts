@@ -59,6 +59,6 @@ export class Payment {
     @AfterInsert()
     async adjustBalance() {
         let manager = getManager()
-        await manager.update(Account, this.account.id, {balance: this.account.balance + this.amount})
+        await manager.update(Account, this.account.id, {balance: this.account.balance + (this.amount*100)})
     }
 }

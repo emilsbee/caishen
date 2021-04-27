@@ -29,7 +29,7 @@ export default class Server {
         this.app.use(express.json())
 
         if (process.env.NODE_ENV === "development") {
-            this.app.use(logger)
+            // this.app.use(logger)
         }
         
         // Routers

@@ -36,9 +36,7 @@ router.post("/", async (req, res, next) => {
             let foundAccount = await transactionalEntityManager.find(Account, {id: accountid})
             if (foundAccount.length === 0) {
                 return next({code: 400, message: "You must provide a valid accountid."})
-            } else {
-                await transactionalEntityManager.save(Account,{id: accountid, payments: [newPayment]})
-            }
+            } 
             
             // Payee section
             let foundPayee = await transactionalEntityManager.find(Payee, {name: payeeName})
@@ -47,7 +45,6 @@ router.post("/", async (req, res, next) => {
             if (foundPayee.length === 0) {
                 newPayee = new Payee()
                 newPayee.name = payeeName
-                newPayee.payments = [newPayment]
 
                 let payeeErrors:any[]
                 payeeErrors = await validate(newPayee)
@@ -57,9 +54,7 @@ router.post("/", async (req, res, next) => {
                 } else {
                     await transactionalEntityManager.save(Payee, newPayee)
                 }
-            } else {
-                await transactionalEntityManager.save(Payee, {id: foundPayee[0].id, payments: [newPayment]})
-            }
+            } 
 
             // Payment category section
             let foundPaymentCategory = await transactionalEntityManager.find(PaymentCategory, {name: paymentCategory})
@@ -68,7 +63,6 @@ router.post("/", async (req, res, next) => {
             if (foundPaymentCategory.length === 0) {
                 newPaymentCategory = new PaymentCategory()
                 newPaymentCategory.name = paymentCategory
-                newPaymentCategory.payments = [newPayment]
 
                 let paymentCategoryErrors:any[]
                 paymentCategoryErrors = await validate(newPaymentCategory)
@@ -79,9 +73,7 @@ router.post("/", async (req, res, next) => {
                 } else {
                     await transactionalEntityManager.save(PaymentCategory, newPaymentCategory)
                 }
-            } else {
-                await transactionalEntityManager.save(PaymentCategory, {id: foundPaymentCategory[0].id, payments: [newPayment]})
-            }
+            } 
 
             
             // New payment section
@@ -99,7 +91,7 @@ router.post("/", async (req, res, next) => {
             
             newPayment.description = description
             
-            if (newPayee) {
+            if (foundPayee.length === 0) {
                 newPayment.payee = newPayee
             } else {
                 newPayment.payee = foundPayee[0]

@@ -110,7 +110,6 @@ router.post("/", async (req, res, next) => {
         })
 
     } catch (e) {
-        console.log(e)
         next({code: 500, message: "Failed to complete payment creation transaction."})
     }
 })
@@ -140,6 +139,92 @@ router.get("/all", async (req, res, next) => {
     } catch (e) {
         next({code: 400, message: "Couldn't fetch payments."})
 
+    }
+})
+
+router.put("/", async (req, res, next) => {
+    let { 
+        payeeName, 
+        paymentCategory, 
+        amount, 
+        paymentid,
+        description
+    } = req.body
+
+    try {
+        await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
+            let payment = await transactionalEntityManager.find(Payment, {where: {id: paymentid}})
+            
+            if (payment.length !== 0) {
+
+                // Payee section
+                if (payeeName && payeeName.length !== 0) { // If payeeName present
+                    let foundPayee = await transactionalEntityManager.find(Payee, {name: payeeName})
+                    let newPayee:Payee
+    
+                    if (foundPayee.length === 0) {
+                        newPayee = new Payee()
+                        newPayee.name = payeeName
+    
+                        let payeeErrors:any[]
+                        payeeErrors = await validate(newPayee)
+                        
+                        if (payeeErrors.length > 0) {
+                            return next({code: 400, message: payeeErrors})
+                        } else {
+                            payment[0].payee = newPayee
+                            await transactionalEntityManager.save(Payee, newPayee)
+                        }
+                    } else {
+                        payment[0].payee = foundPayee[0]
+                    }
+                }
+
+                // Amount section
+                if (amount) {
+                    payment[0].account.balance = payment[0].account.balance - payment[0].amount + amount
+                    payment[0].amount = amount
+                    await transactionalEntityManager.save(Account, payment[0].account)
+                }
+
+                // Payment category section
+                if (paymentCategory && paymentCategory.length !== 0) {
+                    let foundPaymentCategory = await transactionalEntityManager.find(PaymentCategory, {name: paymentCategory})
+                    let newPaymentCategory:PaymentCategory
+        
+                    if (foundPaymentCategory.length === 0) {
+                        newPaymentCategory = new PaymentCategory()
+                        newPaymentCategory.name = paymentCategory
+        
+                        let paymentCategoryErrors:any[]
+                        paymentCategoryErrors = await validate(newPaymentCategory)
+        
+                        if (paymentCategoryErrors.length > 0) {
+                            return next({code: 400, message: paymentCategoryErrors})
+                        } else {
+                            payment[0].category = newPaymentCategory
+                            await transactionalEntityManager.save(PaymentCategory, newPaymentCategory)
+                        }
+                    } else {
+                        payment[0].category = foundPaymentCategory[0]
+                    }
+                }
+
+                // Description section
+                if (description && description.length !== 0) {
+                    payment[0].description = description
+                }
+
+                // Payment section
+                await transactionalEntityManager.save(Payment, payment[0])
+                res.status(200).json(payment)
+            } else {
+                return next({code: 400, message: "You must provide a valid paymentid."})
+            }
+
+        })
+    } catch (e) {
+        next({code: 500, message: "Failed to complete payment creation transaction."})
     }
 })
 

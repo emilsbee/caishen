@@ -1,0 +1,46 @@
+{
+  "version": "0.0.1",
+  "name": "Caishen",
+  "dependencies": {
+    "bent": {
+      "version": "7.3.12",
+      "resolved": "https://registry.npmjs.org/bent/-/bent-7.3.12.tgz"
+    },
+    "body-parser": {
+      "version": "1.19.0",
+      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.19.0.tgz"
+    },
+    "class-validator": {
+      "version": "0.13.1",
+      "resolved": "https://registry.npmjs.org/class-validator/-/class-validator-0.13.1.tgz"
+    },
+    "crypto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/crypto/-/crypto-1.0.1.tgz"
+    },
+    "dotenv": {
+      "version": "8.2.0",
+      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz"
+    },
+    "express": {
+      "version": "4.17.1",
+      "resolved": "https://registry.npmjs.org/express/-/express-4.17.1.tgz"
+    },
+    "jsonwebtoken": {
+      "version": "8.5.1",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-8.5.1.tgz"
+    },
+    "reflect-metadata": {
+      "version": "0.1.13",
+      "resolved": "https://registry.npmjs.org/reflect-metadata/-/reflect-metadata-0.1.13.tgz"
+    },
+    "sqlite3": {
+      "version": "4.2.0",
+      "resolved": "https://registry.npmjs.org/sqlite3/-/sqlite3-4.2.0.tgz"
+    },
+    "typeorm": {
+      "version": "0.2.31",
+      "resolved": "https://registry.npmjs.org/typeorm/-/typeorm-0.2.31.tgz"
+    }
+  }
+}

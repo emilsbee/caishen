@@ -1,11 +1,16 @@
 // External imports
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm"
-import {IsDefined, IsIBAN, IsInt, IsOptional, IsString, Validate, IsCurrency} from "class-validator"
+import {IsDefined, IsIBAN, IsInt, IsOptional, IsString, Validate} from "class-validator"
 
 // Internal imports
 import { Payment } from "../payment/payment"
 import {IsOneOf} from "../../classValidators/IsInValidator"
 
+/**
+ * Account entity. Represents an account of various types such as a Bank account that has the feature
+ * of listening to payments from the Bank's api. Not all banks have this though. Account can also be of 
+ * type cash and crypto.
+ */
 @Entity()
 export class Account {
 

@@ -13,7 +13,7 @@ export let server:Server
 before(async () => {
     database = new DatabaseConnection()
     await database.startTestDb()    
-    server = new Server()
+    server = new Server(false)
     server.startServer()
 })
 

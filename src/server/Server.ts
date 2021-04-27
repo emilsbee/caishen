@@ -22,14 +22,14 @@ export default class Server {
 
     private app: Application // Express app instance
 
-    public constructor() {
+    public constructor(logging:boolean) {
         this.app = express()
 
         // Middleware
         this.app.use(express.json())
 
-        if (process.env.NODE_ENV === "development") {
-            // this.app.use(logger)
+        if (process.env.NODE_ENV === "development" && logging) {
+            this.app.use(logger)
         }
         
         // Routers
@@ -48,6 +48,8 @@ export default class Server {
         // Error handlers
         this.startErrorHandler()
     } 
+
+    
 
     /**
      * The final error handler route. 

@@ -114,11 +114,6 @@ router.post("/", async (req, res, next) => {
     }
 })
 
-
-router.get("/", (req, res) => {
-    res.json({payment: "Returning single payment"})
-})
-
 /**
  * Get all payments for a given account.
  * @param accountid The accountid of account from which to fetch payments.
@@ -142,6 +137,14 @@ router.get("/all", async (req, res, next) => {
     }
 })
 
+/**
+ * Update a given payment.
+ * @param payeeName The name of the payee if doesn't exist, it is created.
+ * @param paymentCategory The payment category if doesn't exist, it is created.
+ * @param amount The amount, either positive or negative integer. 
+ * @param paymentid Paymentid of payment to be updated.
+ * @param description The description of the payment.
+ */
 router.put("/", async (req, res, next) => {
     let { 
         payeeName, 
@@ -226,6 +229,10 @@ router.put("/", async (req, res, next) => {
     } catch (e) {
         next({code: 500, message: "Failed to complete payment creation transaction."})
     }
+})
+
+router.delete("/", async (req, res, next) => {
+
 })
 
 export default router

@@ -240,8 +240,16 @@ router.delete("/", async (req, res, next) => {
 
     try {
         await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
-            await transactionalEntityManager.delete(Payment, {id: paymentid})
-            res.status(200).send()
+            let payment = await transactionalEntityManager.find(Payment, {id: paymentid})
+             
+            if (payment.length !== 0) {
+                 payment[0].account.balance = payment[0].account.balance - payment[0].amount
+                 await transactionalEntityManager.delete(Payment, {id: paymentid})
+                 await transactionalEntityManager.save(Account, payment[0].account)
+                 res.status(200).send()
+             } else {
+                return next({code: 400, message: "You must provide a valid paymentid."})
+             }
         })
     } catch (e) {
         next({code: 500, message: "Failed to payment deletion transaction."})

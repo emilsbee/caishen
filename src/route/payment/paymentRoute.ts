@@ -231,8 +231,21 @@ router.put("/", async (req, res, next) => {
     }
 })
 
+/**
+ * Route for deleting a given payment.
+ * @param paymentid Paymentid of payment to be deleted.
+ */
 router.delete("/", async (req, res, next) => {
+    const {paymentid} = req.query
 
+    try {
+        await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
+            await transactionalEntityManager.delete(Payment, {id: paymentid})
+            res.status(200).send()
+        })
+    } catch (e) {
+        next({code: 500, message: "Failed to payment deletion transaction."})
+    }
 })
 
 export default router

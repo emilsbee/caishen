@@ -157,7 +157,7 @@ router.get("/", async (req, res, next) => {
                 }
 
                 // Iban section
-                if (iban && iban.length !== 0) {
+                if (iban && iban.length !== 0 && account[0].type === "Bank") {
                     account[0].iban = iban
                 }
 

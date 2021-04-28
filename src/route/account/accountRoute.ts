@@ -130,4 +130,50 @@ router.get("/", async (req, res, next) => {
 
 })
 
+/**
+ * Route for editing account.
+ * @param accountid Accountid of the account to be edited.
+ * @param name The new name of the account.
+ * @param iban The new iban of the account.
+ * @param description The new description of the account.
+ */
+ router.put("/", async (req, res, next) => {
+    let { 
+        accountid, 
+        name, 
+        iban, 
+        description,
+    } = req.body
+
+    try {
+        await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
+            let account = await transactionalEntityManager.find(Account, {id: accountid})
+
+            if (account.length !== 0) {
+
+                // Name section
+                if (name && name.length !== 0) {
+                    account[0].name = name
+                }
+
+                // Iban section
+                if (iban && iban.length !== 0) {
+                    account[0].iban = iban
+                }
+
+                // Description section
+                if (description && description.length !== 0) {
+                    account[0].description = description
+                }
+
+                await transactionalEntityManager.save(Account, account[0])
+                res.json(account)
+            } else {
+                return next({code: 400, message: "You must provide a valid accountid."})
+            }
+        })
+    } catch (e) {
+        next({code: 500, message: "Couldn't edit the given account."})
+    }
+})
 export default router

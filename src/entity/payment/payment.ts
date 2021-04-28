@@ -46,11 +46,6 @@ export class Payment {
     @IsInstance(Account)
     account: Account
 
-    @Column()
-    @IsDefined()
-    @Validate(IsOneOf, ["EUR", "USD", "GBP"])
-    currency: string
-
     @Column({nullable: true})
     @IsOptional()
     @IsString()

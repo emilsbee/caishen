@@ -87,8 +87,6 @@ router.post("/", async (req, res, next) => {
                 newPayment.category = foundPaymentCategory[0]
             }
 
-            newPayment.currency = foundAccount[0].currency
-            
             newPayment.description = description
             
             if (foundPayee.length === 0) {

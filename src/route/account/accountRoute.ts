@@ -5,6 +5,7 @@ var express = require("express")
 
 // Internal imports
 import { Account } from "../../entity/account/account";
+import { Payment } from "../../entity/payment/payment";
 
 var router = express.Router()
 
@@ -60,23 +61,28 @@ router.post("/", async (req, res, next) => {
  * @param {string} accountid The id of account to delete.
  */
 router.delete("/", async (req, res, next) => {
-    const { accountid } = req.body
-
-    let accountRepository = getRepository(Account)
+    const { accountid } = req.query
 
     try {
-        let account = await accountRepository.find({id: accountid})
+        await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
+            let account = await transactionalEntityManager.find(Account, {id:accountid})
 
-        if (account.length > 0) {
-            await accountRepository.remove(account[0])
-            res.status(200).json(account)
-        } else {
-            next({code: 404, message: "Couldn't delete the account."})
-        }
-        
+            if (account.length !== 0) {
+                // Deleting respective account payments
+                let paymentRepository = transactionalEntityManager.getRepository(Payment)
+                let payments = await paymentRepository.find({where: {account: accountid}})
+                await transactionalEntityManager.remove(Payment, payments)
+                
+                // Deleting account
+                let accountRepository = transactionalEntityManager.getRepository(Account)
+                await accountRepository.delete(accountid)
+                res.status(200).send()
+            } else {
+                return next({code: 400, message: "You must provide a valid accountid."})
+            }
+        })
     } catch (e) {
-        next({code: 500, message: "Couldn't delete the given account."})
-
+        next({code: 500, message: "Failed to complete account deletion transaction."})
     }
 })
 

@@ -252,7 +252,7 @@ router.delete("/", async (req, res, next) => {
              }
         })
     } catch (e) {
-        next({code: 500, message: "Failed to payment deletion transaction."})
+        next({code: 500, message: "Failed to complete payment deletion transaction."})
     }
 })
 

@@ -165,9 +165,15 @@ router.get("/", async (req, res, next) => {
                 if (description && description.length !== 0) {
                     account[0].description = description
                 }
-
-                await transactionalEntityManager.save(Account, account[0])
-                res.json(account)
+                
+                validate(account[0]).then(async errors => {
+                    if (errors.length > 0) {
+                        return next({code: 400, message: errors})
+                    } else {
+                        await transactionalEntityManager.save(Account, account[0])
+                        res.json(account)
+                    }
+                })
             } else {
                 return next({code: 400, message: "You must provide a valid accountid."})
             }

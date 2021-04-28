@@ -241,7 +241,7 @@ router.delete("/", async (req, res, next) => {
     try {
         await getManager().transaction("SERIALIZABLE", async transactionalEntityManager => {
             await transactionalEntityManager.delete(Payment, {id: paymentid})
-            res.status(200).send()
+            res.status(200).json()
         })
     } catch (e) {
         next({code: 500, message: "Failed to payment deletion transaction."})

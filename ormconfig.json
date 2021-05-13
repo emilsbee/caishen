@@ -1,6 +1,10 @@
 {
-   "type": "sqlite",
-   "database": "database.sqlite",
+   "type": "postgres",
+   "host": "172.17.0.2",
+   "port": "5432",
+   "username": "postgres",
+   "password": "911",
+   "database": "postgres",
    "synchronize": true,
    "logging": false,
    "entities": [

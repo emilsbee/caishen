@@ -20,7 +20,30 @@ export default class DatabaseConnection {
      */
     public async startDb():Promise<void> {
         try {
-            this.connection = await createConnection()
+            this.connection = await createConnection({
+                    type: "postgres",
+                    host: process.env.DB_IP,
+                    port: 5432,
+                    username: "postgres",
+                    password: process.env.DB_PASS,
+                    database: "postgres",
+                    synchronize: true,
+                    logging: false,
+                    entities: [
+                        "src/entity/**/*.ts"
+                    ],
+                    migrations: [
+                        "src/migration/**/*.ts"
+                    ],
+                    subscribers: [
+                        "src/subscriber/**/*.ts"
+                    ],
+                    cli: {
+                        entitiesDir: "src/entity",
+                        migrationsDir: "src/migration",
+                        subscribersDir: "src/subscriber"
+                    }
+                })
             console.info("Database connection created.")
         } catch (e) {
             console.error("Failed to start the database. ERROR: ", e)

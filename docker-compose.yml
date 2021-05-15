@@ -1,0 +1,36 @@
+version: '3.1'
+
+networks:
+    caishennet:
+        name: caishen-net
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.16.238.0/24"
+
+services:
+    postgres:
+        image: postgres
+        environment:
+            POSTGRES_PASSWORD: ${DB_PASS}
+        volumes:
+            - caishen-postgres:/var/lib/postgresql/data
+        container_name: caishen-postgres
+        networks:
+            caishennet:
+                ipv4_address: 172.16.238.10
+    caishen:
+        image: caishen-app
+        ports: 
+            - "3000:80"
+        container_name: caishen-app
+        depends_on: 
+            - postgres
+        networks:
+            caishennet:
+                ipv4_address: 172.16.238.11
+
+    
+volumes:
+    caishen-postgres:
+                      
